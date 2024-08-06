@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="calendar_event_view_form_inherit_appointment_jitsi" model="ir.ui.view">
+        <field name="name">calendar.event.form.jitsi</field>
+        <field name="model">calendar.event</field>
+        <field name="inherit_id" ref="calendar.view_calendar_event_form"/>
+        <field name="arch" type="xml">
+            <!-- Hidden categ_ids in end -->
+            <xpath expr="//field[@name='categ_ids']" position="replace">
+            </xpath>
+
+            <!--Hidden Video_location-->
+            <xpath expr="//field[@name='videocall_location']" position="replace">
+                <field name="videocall_location" invisible="1"/>
+            </xpath>
+            <xpath expr="//button[@name='clear_videocall_location']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='set_discuss_videocall_location']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+
+            <xpath expr="//label[@for='videocall_location']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='location']" position="after">
+                <label for="jitsi_link" attrs="{'invisible': [('is_jitsi', '!=', True )]}"/>
+                <div col="2" class="o_row" attrs="{'invisible': [('is_jitsi', '!=', True )]}">
+                    <field name="jitsi_link" class="oe_inline" string="Videocall URL" widget="CopyClipboardChar" force_save="1"/>
+                    <button name="clear_jitsi_link" type="object" class="btn btn-link" attrs="{'invisible': [('jitsi_link', '=', False)]}" context="{'recurrence_update': recurrence_update}">
+                        <span class="fa fa-times"/><span> Clear meeting</span>
+                    </button>
+                    <button name="set_jitsi_link" type="object" class="btn btn-link" attrs="{'invisible': [('jitsi_link', '!=', False)]}" context="{'recurrence_update': recurrence_update}">
+                        <span class="fa fa-plus"/><span> Add Odoo meeting</span>
+                    </button>
+                </div>
+
+                <label for="videocall_location" attrs="{'invisible': [('is_jitsi', '=', True )]}"/>
+                <div col="2" class="o_row" attrs="{'invisible': [('is_jitsi', '=', True )]}">
+                    <field name="videocall_location" class="oe_inline" string="Videocall URL" widget="CopyClipboardChar" force_save="1" attrs="{'readonly':[('videocall_source','=', 'discuss')]}"/>
+                    <button name="clear_videocall_location" type="object" class="btn btn-link" attrs="{'invisible': [('videocall_location', '=', False)]}" context="{'recurrence_update': recurrence_update}">
+                        <span class="fa fa-times"/><span> Clear meeting</span>
+                    </button>
+                    <button name="set_discuss_videocall_location" type="object" class="btn btn-link" attrs="{'invisible':  [('videocall_location', '!=', False)]}" context="{'recurrence_update': recurrence_update}">
+                        <span class="fa fa-plus"/><span> Add Odoo meeting</span>
+                    </button>
+                </div>
+
+                <field name="categ_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
+                <field name="is_jitsi" invisible="1"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <template id="appointment_validated" name="Website Appointment: Appointment Confirmed" inherit_id="appointment.appointment_validated">
+        <!-- Replace action_join_video_call with jitsi_link  -->
+        <xpath expr="//div[@t-if='event.videocall_location']" position="replace">
+            <div t-if="event.jitsi_link" class="row">
+                <div class="col-4 col-sm-3 col-xl-2 pe-0">
+                    <label class="form-label">How to Join:</label>
+                </div>
+                <div class="o_pt_2_px col-8 col-sm-9 col-xl-10 text-break">
+                    <label>
+                        <t t-if="event.get_base_url() in event.jitsi_link"> Join with Jitsi Discuss</t>
+                        <t t-else=""> Join at</t>
+                    </label><br/>
+                    <a t-att-href="event.jitsi_link" target="_blank" t-out="event.jitsi_link"/>
+                </div>
+            </div>
+             <div t-else="" class="row">
+                     <div class="col-4 col-sm-3 col-xl-2 pe-0">
+                         <label class="form-label">How to Join:</label>
+                     </div>
+                     <div class="o_pt_2_px col-8 col-sm-9 col-xl-10 text-break">
+                         <label>
+                             <t t-if="event.get_base_url() in event.videocall_location"> Join with Odoo Discuss</t>
+                             <t t-else=""> Join at</t>
+                         </label><br/>
+                         <a t-att-href="event.videocall_location" target="_blank" t-out="event.videocall_location"/>
+                 </div>
+             </div>
+        </xpath>
+    </template>
+
+</odoo>
