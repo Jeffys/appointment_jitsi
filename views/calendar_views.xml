@@ -2,46 +2,30 @@
 <odoo>
 
     <record id="res_config_settings_action" model="ir.actions.act_window">
-       <field name="name">Configuration</field>
-       <field name="type">ir.actions.act_window</field>
-       <field name="res_model">res.config.settings</field>
-       <field name="view_mode">form</field>
-       <field name="target">inline</field>
-       <field name="context">{'module' : 'appointment_jitsi'}</field>
+        <field name="name">Configuration</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'appointment_jitsi'}</field>
     </record>
 
     <record id="res_config_settings_view_form_inherit_jitsi" model="ir.ui.view">
-       <field name="name">res.config.settings.view.form.inherit.calendar</field>
-       <field name="model">res.config.settings</field>
-       <field name="priority" eval="15"/>
-       <field name="inherit_id" ref="base.res_config_settings_view_form"/>
-       <field name="arch" type="xml">
-           <xpath expr="//div[hasclass('settings')]" position="inside">
-
-                <div class="app_settings_block" data-string="Calendar" string="Calendar" data-key="appointment_jitsi" >
-                    <h2>Calendar Settings</h2>
-                    <div class="row mt16 o_settings_container">
-                        <div class="col-12 col-lg-6 o_setting_box">
-                              <div class="o_setting_left_pane">
-                                  <field name="is_jitsi"/>
-                              </div>
-                              <div class="o_setting_right_pane">
-                                  <label for="is_jitsi"/>
-                                  <div class="text-muted">
-                                      Integration Video conference with jitsi
-                                  </div>
-                              </div>
+        <field name="name">res.config.settings.view.form.inherit.jitsi</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="calendar.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//setting[@id='sync_google_calendar_setting']" position="after">
+                <setting string="Jitsi Configuration" documentation="https://jitsi.github.io/handbook/docs/intro/" help="Integration video conference with Jitsi" id="sync_jitsi_meet_setting">
+                    <field name="is_jitsi"/>
+                    <div class="content-group" invisible="not is_jitsi">
+                        <div class="mt16 row">
+                            <label for="jitsi_link" string="Jitsi Link" class="col-3 col-lg-3 o_light_label"/>
+                            <field name="jitsi_link" nolabel="1"/>
                         </div>
                     </div>
-                </div>
-       </xpath>
-       </field>
+                </setting>
+            </xpath>
+        </field>
     </record>
-
-    <menuitem id="jitsi_configuration_settings_menu_action"
-             name="Settings"
-             parent="calendar.calendar_menu_config"
-             action="res_config_settings_action"
-             sequence="8"/>
-
 </odoo>

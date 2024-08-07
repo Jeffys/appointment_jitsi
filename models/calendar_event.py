@@ -5,63 +5,87 @@ import uuid
 
 
 class CalendarEvent(models.Model):
+    """
+    Inherited model to add Jitsi integration to calendar events.
+    """
     _inherit = "calendar.event"
 
-    jitsi_link = fields.Text(string="Jitsi Link", store=True, copy=True, compute='_set_jitsi_link')
+    jitsi_link = fields.Text(
+        string="Jitsi Link", 
+        store=True, 
+        copy=True, 
+        compute='_compute_jitsi_link'
+    )
+    
+    is_jitsi = fields.Boolean(
+        string="Enable Jitsi Integration", 
+        default=False
+    )
 
-    # dummy method. this method is intercepted in the frontend and the value is set locally
-    def set_jitsi_link(self):
-        self._set_jitsi_link()
+    def generate_jitsi_link(self):
+        """
+        Generate a new Jitsi link for the event.
+        """
+        self._compute_jitsi_link()
 
     def clear_jitsi_link(self):
+        """
+        Clear the Jitsi link for the event.
+        """
         self.jitsi_link = False
 
-    @api.depends('jitsi_link', 'access_token')
-    def _set_jitsi_link(self):
-        data = self.env['ir.config_parameter'].get_param('appointment_jitsi.is_jitsi')
-        if data:
-            """ This method sets the jitsi_link to a jitsi route. """
-            JITSI_ROUTE = 'https://meet.jit.si'
-            company = 'doodex'
+    @api.depends('access_token')
+    def _compute_jitsi_link(self):
+        """
+        Compute and set the Jitsi link based on the access token.
+        """
+        get_param = self.env['ir.config_parameter'].sudo().get_param
+        is_jitsi_enabled = get_param('is_jitsi_param')
+        jitsi_link_param = get_param('jitsi_link_param')
+        
+        if is_jitsi_enabled:
+            jitsi_base_url = 'https://meet.jit.si'
+            company_name = jitsi_link_param or 'doodex'
+            
             for rec in self:
                 if not rec.access_token:
                     rec.access_token = uuid.uuid4().hex
-                rec.jitsi_link = f"{JITSI_ROUTE}/{company}/{rec.access_token}"
-            return rec
+                rec.jitsi_link = f"{jitsi_base_url}/{company_name}/{company_name}-{rec.access_token}"
+                rec.videocall_location = f"{jitsi_base_url}/{company_name}/{company_name}-{rec.access_token}"
         else:
             for rec in self:
                 rec._set_discuss_videocall_location()
-            return rec
 
     def action_join_video_call(self):
+        """
+        Return an action to join the video call.
+        """
         return {
             'type': 'ir.actions.act_url',
-            'url': self.jitsi_link if self.is_jitsi == True else self.videocall_location,
+            'url': self.jitsi_link if self.is_jitsi else self.videocall_location,
             'target': 'new'
         }
 
     @api.model
     def create(self, values):
-        res = super(CalendarEvent, self).create(values)
-        return res
-
-    is_jitsi = fields.Boolean(
-        string="Jitsi Integration", default=False,
-    )
-
-    @api.constrains("jitsi_link")
-    def _compute_jitsi(self):
-        data = self.env['ir.config_parameter'].get_param('appointment_jitsi.is_jitsi')
-        for record in self:
-            if data:
-                record.is_jitsi = True
-            else:
-                record.is_jitsi = False
-
+        """
+        Create a new calendar event, ensuring the Jitsi link is properly set.
+        """
+        if 'is_jitsi' in values:
+            values['access_token'] = uuid.uuid4().hex if values.get('is_jitsi') else False
+        return super().create(values)
 
 class ResConfigSettings(models.TransientModel):
+    """
+    Inherited model for configuring Jitsi integration settings.
+    """
     _inherit = 'res.config.settings'
-
+    
     is_jitsi = fields.Boolean(
-        string="Jitsi Integration", config_parameter='appointment_jitsi.is_jitsi', default=False
+        "Enable Jitsi Integration", 
+        config_parameter='is_jitsi_param'
+    )
+    jitsi_link = fields.Char(
+        "Jitsi Link Integration", 
+        config_parameter='jitsi_link_param'
     )

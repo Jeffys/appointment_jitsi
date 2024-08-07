@@ -25,14 +25,10 @@
         "calendar",
     ],
     "data": [
-        "views/calendar_event_views.xml",
         "views/calendar_views.xml",
-        "data/mail_template_data.xml",
-        # "security/ir.model.access.csv",  # Uncomment if security access control is added
     ],
     "installable": True,
     "application": True,
     "auto_install": False,
     "images": ["static/description/banner.png"],
-    "uninstall_hook": "_uninstall_hook",
 }
