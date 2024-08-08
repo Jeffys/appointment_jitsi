@@ -19,14 +19,17 @@ class CalendarEvent(models.Model):
     @api.depends('jitsi_link', 'access_token')
     def _set_jitsi_link(self):
         data = self.env['ir.config_parameter'].get_param('appointment_jitsi.is_jitsi')
+        company_param_id = self.env['ir.config_parameter'].get_param('company_param')
+        company_param = self.env['res.company'].sudo().search([('id', '=', company_param_id)], limit=1)
+        company_param = company_param.name if company_param else 'My Company'
         if data:
             """ This method sets the jitsi_link to a jitsi route. """
             JITSI_ROUTE = 'https://meet.jit.si'
-            company = 'doodex'
+            company = company_param 
             for rec in self:
                 if not rec.access_token:
                     rec.access_token = uuid.uuid4().hex
-                rec.jitsi_link = f"{JITSI_ROUTE}/{company}/{rec.access_token}"
+                rec.jitsi_link = f"{JITSI_ROUTE}/{company}/{company}-{rec.access_token}"
             return rec
         else:
             for rec in self:
@@ -64,4 +67,10 @@ class ResConfigSettings(models.TransientModel):
 
     is_jitsi = fields.Boolean(
         string="Jitsi Integration", config_parameter='appointment_jitsi.is_jitsi', default=False
+    )
+    company_param = fields.Many2one(
+        'res.company', 
+        string="Company", 
+        config_parameter='company_param',
+        default=lambda self: self.env.company
     )
