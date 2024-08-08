@@ -20,8 +20,8 @@
                     <field name="is_jitsi"/>
                     <div class="content-group" invisible="not is_jitsi">
                         <div class="mt16 row">
-                            <label for="jitsi_link" string="Jitsi Link" class="col-3 col-lg-3 o_light_label"/>
-                            <field name="jitsi_link" nolabel="1"/>
+                            <label for="company_param" string="Company" class="col-3 col-lg-3 o_light_label"/>
+                            <field name="company_param" nolabel="1" required="1" />
                         </div>
                     </div>
                 </setting>

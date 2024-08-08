@@ -41,11 +41,13 @@ class CalendarEvent(models.Model):
         """
         get_param = self.env['ir.config_parameter'].sudo().get_param
         is_jitsi_enabled = get_param('is_jitsi_param')
-        jitsi_link_param = get_param('jitsi_link_param')
+        company_param_id = get_param('company_param')
+        company_param = self.env['res.company'].sudo().search([('id', '=', company_param_id)], limit=1)
+        company_param = company_param.name if company_param else 'Record not found'
         
         if is_jitsi_enabled:
             jitsi_base_url = 'https://meet.jit.si'
-            company_name = jitsi_link_param or 'doodex'
+            company_name = company_param
             
             for rec in self:
                 if not rec.access_token:
@@ -85,7 +87,9 @@ class ResConfigSettings(models.TransientModel):
         "Enable Jitsi Integration", 
         config_parameter='is_jitsi_param'
     )
-    jitsi_link = fields.Char(
-        "Jitsi Link Integration", 
-        config_parameter='jitsi_link_param'
+    company_param = fields.Many2one(
+        'res.company', 
+        string="Company", 
+        config_parameter='company_param',
+        default=lambda self: self.env.company
     )
