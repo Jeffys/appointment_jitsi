@@ -17,7 +17,7 @@
     "company": "Doodex",
     "website": "https://www.doodex.net/",
     "category": "Appointment",
-    "license": "AGPL-3",
+    "license": "LGPL-3",
     "version": "16.0.1.0.0",
     "depends": [
         "base",
@@ -35,4 +35,6 @@
     "auto_install": False,
     "images": ["static/description/banner.png"],
     "uninstall_hook": "_uninstall_hook",
+    "price": 18.3,
+    "currency": "USD"
 }
