@@ -28,9 +28,7 @@
         "views/calendar_views.xml",
     ],
     "installable": True,
-    "application": True,
+    "application": False,
     "auto_install": False,
     "images": ["static/description/banner.png"],
-    "price": 18.3,
-    "currency": "USD"
 }
