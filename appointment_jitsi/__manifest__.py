@@ -31,10 +31,8 @@
         # "security/ir.model.access.csv",  # Uncomment if security access control is added
     ],
     "installable": True,
-    "application": True,
+    "application": False,
     "auto_install": False,
     "images": ["static/description/banner.png"],
     "uninstall_hook": "_uninstall_hook",
-    "price": 18.3,
-    "currency": "USD"
 }
