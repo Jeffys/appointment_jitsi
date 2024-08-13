@@ -35,8 +35,7 @@ If you are looking for a partner who can provide customized Odoo solutions tailo
 Visit our website at www.doodex.net to learn more about our services and how we can help you achieve your business objectives.
 [get a free audit here](https://www.doodex.net/audit-gratuit)
 
-Appointment Jitsi
-## [Appointment Jitsi](index.html)
+## [Appointment Jitsi](https://www.doodex.net/en/blog/doodex-blog-2/appointment-jitsi-102)
 This Odoo module adds Jitsi integration to appointment scheduling. It automatically generates a unique Jitsi meeting link for each appointment.
 
 ## Features
